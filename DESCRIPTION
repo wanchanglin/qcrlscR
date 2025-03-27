@@ -17,5 +17,4 @@ RoxygenNote: 7.3.2
 LazyLoad: yes
 LazyData: yes
 ZipData: No
-Imports: mt, tidyr, dplyr, purrr, tibble, ggplot2, plyr, reshape2, magrittr, 
-  MASS, lattice, latticeExtra, ellipse
+Imports: dplyr, tibble, magrittr 

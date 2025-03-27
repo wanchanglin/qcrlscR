@@ -1,3 +1,5 @@
+## Functions for QC-RLSC
+## wl-27-03-2025, Thu: Prepare for devtools::check()
 
 ## -----------------------------------------------------------------------
 #' Wrapper function for QC-RLSC
@@ -45,7 +47,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
       tmp[!qc_ind] <- NA
       ## QC outlier detection
       out_ind <- outl_det_u(tmp)
-      ## asisgn outlier as qc median
+      ## assign outlier as qc median
       x[out_ind] <- qc_median
       return(x)
     }) %>% as_tibble()
@@ -262,7 +264,6 @@ batch_shift <- function(x, y, method = "mean", overall_average = TRUE) {
 #'    by 0.6745.
 #'  - `percentile`: either smaller than the 1st quartile minus 1.5 times of
 #'    IQR, or larger than the 3rd quartile plus 1.5 times of IQR.
-#' @family  outlier detectors
 #' @examples
 #' x <- c(2, 3, 4, 5, 6, 7, NA, 9, 50, 50)
 #' outl_det_u(x, "percentile")
@@ -367,3 +368,49 @@ mv_filter_qc <- function(x, y, thres = 0.3) {
   x <- x[, idx, drop = FALSE]
   return(list(dat = x, idx = idx))
 }
+
+## ------------------------------------------------------------------------
+#' @description `qcrlscR` implements quality control–based robust LOESS
+#' signal correction for metabolomics data analysis.
+#'
+#' @section Main functions:
+#' The main qcrlscR provides more functions for metabolomics data analysis.
+#' These functions are statistical analysis and plot methods with `ggplot2`
+#' and `lattice`. It uses `tidyverse` as well as `reshape2` and `plyr` 
+#' packages.
+#'
+#' @section Package context:
+#' This package follows the principles of the "tidyverse" as mush as possible.
+#' It also uses `melt` in `reshape2` if `tidyr` is complicated in some
+#' circumstances.
+#'
+#' @import dplyr tibble
+#' @importFrom stats median approx loess loess.control predict quantile
+#' @importFrom magrittr %>%
+#' @keywords internal
+"_PACKAGE"
+
+#' Pipe operator
+#'
+#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @usage lhs \%>\% rhs
+#' @param lhs A value or the magrittr place-holder.
+#' @param rhs A function call using the magrittr semantics.
+#' @return The result of calling `rhs(lhs)`.
+## wl-02-12-2021, Thus: get from running 'usethis::use_pipe()'
+NULL
+
+##  1) qc_rlsc_wrap
+##  2) qc_rlsc
+##  3) loess_gcv
+##  4) batch_shift
+##  5) outl_det_u
+##  6) mv_perc
+##  7) mv_filter
+##  8) mv_filter_qc

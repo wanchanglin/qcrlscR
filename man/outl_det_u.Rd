@@ -35,4 +35,3 @@ outl_det_u(x, "percentile")
 Wilcox R R, Fundamentals of Modern Statistical Methods: Substantially
 Improving Power and Accuracy, Springer 2010 (2nd edition), pages 31-35.
 }
-\concept{outlier detectors}
