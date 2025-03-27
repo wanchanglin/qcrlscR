@@ -4,7 +4,7 @@
 \name{qcrlscR-package}
 \alias{qcrlscR}
 \alias{qcrlscR-package}
-\title{qcrlscR: Quality control–based robust LOESS signal correction in R}
+\title{qcrlscR: Quality Control–based Robust LOESS Signal Correction in R}
 \description{
 \code{qcrlscR} implements quality control–based robust LOESS
 signal correction for metabolomics data analysis.

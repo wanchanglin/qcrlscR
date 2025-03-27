@@ -50,7 +50,8 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
       ## assign outlier as qc median
       x[out_ind] <- qc_median
       return(x)
-    }) %>% as_tibble()
+    })
+    dat <- as.data.frame(dat)
   }
 
   ## QC-RLSC
@@ -61,17 +62,17 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
       idx <- cls.bl %in% x
       tmp <- qc_rlsc(dat[idx,], cls.qc[idx], method = method, opti = opti)
     })
-    res <- bind_rows(res)
+    res <- do.call(rbind, res)
   }
 
   ## batch shift. sensitive to missing values
   if (shift) {
-    res <- batch_shift(res, cls.bl, overall_average = T) %>% as_tibble()
+    res <- batch_shift(res, cls.bl, overall_average = T)
   }
 
   ## inverse log10 transformation
   if (log10) {
-    res <- 10^res %>% as_tibble()
+    res <- 10^res
   }
 
   return(res)
@@ -145,8 +146,9 @@ qc_rlsc <- function(x, y, method = c("subtract", "divide"), opti = TRUE,
       "subtract" = (x - smo) + mn,
       "divide"   = (x / smo) * mn
     )
+  res <- as.data.frame(res)
 
-  return(as_tibble(res))
+  return(res)
 }
 
 ## -----------------------------------------------------------------------
@@ -384,27 +386,9 @@ mv_filter_qc <- function(x, y, thres = 0.3) {
 #' It also uses `melt` in `reshape2` if `tidyr` is complicated in some
 #' circumstances.
 #'
-#' @import dplyr tibble
 #' @importFrom stats median approx loess loess.control predict quantile
-#' @importFrom magrittr %>%
 #' @keywords internal
 "_PACKAGE"
-
-#' Pipe operator
-#'
-#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom magrittr %>%
-#' @usage lhs \%>\% rhs
-#' @param lhs A value or the magrittr place-holder.
-#' @param rhs A function call using the magrittr semantics.
-#' @return The result of calling `rhs(lhs)`.
-## wl-02-12-2021, Thus: get from running 'usethis::use_pipe()'
-NULL
 
 ##  1) qc_rlsc_wrap
 ##  2) qc_rlsc

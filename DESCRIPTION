@@ -1,8 +1,8 @@
 Package: qcrlscR
 Date: 26-03-2025, Wed
 Type: Package
-Title: Quality control–based robust LOESS signal correction in R
-Version: 0.1.0
+Title: Quality Control–based Robust LOESS Signal Correction in R
+Version: 0.1.1
 Author: Wanchang Lin
 Maintainer: Wanchang Lin <wanchanglin@hotmail.com>
 Description: Quality control–based robust LOESS signal correction for
@@ -17,4 +17,3 @@ RoxygenNote: 7.3.2
 LazyLoad: yes
 LazyData: yes
 ZipData: No
-Imports: dplyr, tibble, magrittr 
