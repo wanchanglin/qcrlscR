@@ -33,7 +33,7 @@
 rm(list = ls(all = TRUE))
 options(help_type = "html")
 source("_common.R")
-pkgs <- c("mt", "mtExtra", "tidyverse", "readxl", "openxlsx", "tictoc")
+pkgs <- c("mt", "qcrlscR", "tidyverse", "readxl", "openxlsx", "tictoc")
 invisible(lapply(pkgs, library, character.only = TRUE))
 
 ## ---- Read data ----
@@ -45,7 +45,7 @@ invisible(lapply(pkgs, library, character.only = TRUE))
 ## FILE <- "data_qcmxp_b2_tidy"
 FILE <- "data_man_b4_tidy"
 
-PATH <- here::here("data", paste0(FILE, ".xlsx"))
+PATH <- here::here("extdata", paste0(FILE, ".xlsx"))
 
 #' Load into R
 xls  <- PATH %>%
