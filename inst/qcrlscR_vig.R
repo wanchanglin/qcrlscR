@@ -1,5 +1,5 @@
 #' ---
-#' title: "Quality control–based robust LOESS signal correction (QC-RLSC)"
+#' title: "Quality Control–based Robust LOESS Signal Correction in R"
 #' author: "Wanchang Lin"
 #' date: "`r Sys.Date()`"
 #' output:
@@ -21,12 +21,7 @@
 
 #' <!--
 #' # Test code for QC-RLSC
-#' > wl-20-06-2024, Thu: commence <br/>
-#' > wl-21-06-2024, Fri: test qc_filter and qc_pass <br/>
-#' > wl-03-07-2024, Wed: more test.
-#' > wl-17-07-2024, Wed: QC outlier detection
-#' > wl-18-07-2024, Thu: batch shift
-#' > wl-23-07-2024, Tue: Rscript -e 'knitr::spin("qc_rlsc_vig.R")'
+#' > wl-28-03-2025, Fri: Rscript -e 'knitr::spin("qcrlscR_vig.R")'
 #' -->
 
 #+ common, include=F
@@ -40,11 +35,7 @@ invisible(lapply(pkgs, library, character.only = TRUE))
 #' ## Read data
 
 #' Select file for signal correction
-## FILE <- "data_qcmxp_b4_tidy"
-## FILE <- "data_qcmxp_b3_tidy"
-## FILE <- "data_qcmxp_b2_tidy"
 FILE <- "data_man_b4_tidy"
-
 PATH <- here::here("extdata", paste0(FILE, ".xlsx"))
 
 #' Load into R
