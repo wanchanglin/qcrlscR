@@ -24,6 +24,8 @@
 #' @return  A corrected data frame.
 #' @export
 ## wl-19-07-2024, Fri: wrapper function for QC-RLSC
+## wl-27-03-2025, Thu: remove 'tidyverse', including
+##  'res <- dplyr::bind_rows(res)'
 qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
                          method = c("subtract", "divide"),
                          intra = FALSE, opti = TRUE, log10 = TRUE,
@@ -376,15 +378,16 @@ mv_filter_qc <- function(x, y, thres = 0.3) {
 #' signal correction for metabolomics data analysis.
 #'
 #' @section Main functions:
-#' The main qcrlscR provides more functions for metabolomics data analysis.
-#' These functions are statistical analysis and plot methods with `ggplot2`
-#' and `lattice`. It uses `tidyverse` as well as `reshape2` and `plyr` 
-#' packages.
+#' The `qcrlscR` provides functions for signal correction for metabolomics
+#' data analysis. It allows users to optimise `span` for LOESS. This package
+#' also provides simple functions for univariate outlier detection and
+#' missing value filtering. Users need to use other R packages for missing
+#' value filling before applying this package if the data set has missing
+#' values.
 #'
 #' @section Package context:
-#' This package follows the principles of the "tidyverse" as mush as possible.
-#' It also uses `melt` in `reshape2` if `tidyr` is complicated in some
-#' circumstances.
+#' This package does not use "tidyverse" and only uses basic R for
+#' simplicity and easy maintenance.
 #'
 #' @importFrom stats median approx loess loess.control predict quantile
 #' @keywords internal

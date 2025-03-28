@@ -1,29 +1,28 @@
-# qcrlscR: Quality control–based robust LOESS signal correction in R
+# qcrlscR: Quality Control–based Robust LOESS Signal Correction in R
 
 ## Overview
 
 This package implements quality control–based robust LOESS signal correction
 (QC-RLSC) for metabolomics data analysis.
 
-## Installation from CRAN
-
-```r
-install.packages("qcrlscR")
-```
-
 ## Installation from github
 
 ```r
-library(devtools)
-install_github("wanchanglin/qcrlscR")
+devtools::install_github("wanchanglin/qcrlscR")
+```
+
+## Installation from CRAN
+
+(Coming soon)
+
+```r
+install.packages("qcrlscR")
 ```
 
 ## Authors
 
 - Wanchang Lin (<Wanchang.Lin@liverpool.ac.uk>), The University of Liverpool
 - Warwick Dunn (<Warwick.Dunn@liverpool.ac.uk>), The University of Liverpool
-
-## Citation
 
 ## References
 
