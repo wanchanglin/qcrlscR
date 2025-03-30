@@ -60,7 +60,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
   if (!intra) {
     res <- qc_rlsc(dat, cls.qc, method = method, opti = opti)
   } else { # wl-16-08-2023, Wed: do signal correction inside each batch
-    res <- lapply(levels(cls.bl), function(x){
+    res <- lapply(levels(cls.bl), function(x) {
       idx <- cls.bl %in% x
       tmp <- qc_rlsc(dat[idx,], cls.qc[idx], method = method, opti = opti)
     })
