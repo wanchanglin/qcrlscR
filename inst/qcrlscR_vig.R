@@ -22,54 +22,54 @@
 #' <!--
 #' # Test code for QC-RLSC
 #' > wl-28-03-2025, Fri: Rscript -e 'knitr::spin("qcrlscR_vig.R")'
+#' > wl-31-03-2025, Mon: get html and pdf:
+#' >   Rscript -e "rmarkdown::render('qcrlscR_vig.R', BiocStyle::html_document())"
+#' >   Rscript -e "rmarkdown::render('qcrlscR_vig.R', BiocStyle::pdf_document())"
 #' -->
 
 #+ common, include=F
 rm(list = ls(all = TRUE))
 options(help_type = "html")
-source("_common.R")
-pkgs <- c("mt", "qcrlscR", "tidyverse", "readxl", "openxlsx", "tictoc")
+pkgs <- c("qcrlscR", "mt", "tidyverse", "knitr", "tictoc")
 invisible(lapply(pkgs, library, character.only = TRUE))
+opts_chunk$set(
+  collapse = TRUE,
+  cache = TRUE,
+  comment = "#>",
+  messages = FALSE,
+  warning = FALSE,
+  tidy = FALSE,
+  fig.align = "center",
+  fig.width = 10,
+  fig.height = 10,
+  # dev = "png",
+  # dpi = 100,
+  # fig.margin = TRUE,
+  # fig.asp = 0.618,  # 1 / phi
+  # fig.keep = "none",
+  # fig.path = "figure",
+  fig.show = "hold"
+)
 
 ## ---- Read data ----
 #' ## Read data
 
-#' Select file for signal correction
-FILE <- "data_man_b4_tidy"
-PATH <- here::here("extdata", paste0(FILE, ".xlsx"))
-
-#' Load into R
-xls  <- PATH %>%
-  excel_sheets() %>%
-  set_names() %>%
-  map(read_excel, path = PATH)
-
 #' Check the data
-names(xls)
-t(sapply(xls, dim))
+names(man_qc)
+t(sapply(man_qc, dim))
 
 #' Get meta and data matrix
-meta <- xls$meta
-data <- xls$data %>%
+meta <- man_qc$meta
+data <- man_qc$data %>%
   mutate_if(is.character, as.numeric)
-
-peak <- xls$peak
 
 #' Extract group information of batch and sample types
 names(meta)
-if (T) {     # meta with sample_type and batch
-  (cls.qc <- factor(meta$sample_type))
-  (cls.bl <- factor(meta$batch))
-} else {     # meta with SampleType and Batch
-  (cls.qc <- factor(meta$SampleType))
-  (cls.bl <- factor(meta$Batch))
-}
+(cls.qc <- factor(meta$sample_type))
+(cls.bl <- factor(meta$batch))
 
 ## ---- Missing value filter and fill ----
 #' ## Missing value filter and fill
-
-#' Let zero as NA before missing value process
-data[data == 0] <- NA
 
 #' Check missing value rates
 tail(sort(mv_perc(data)), 20)
@@ -84,9 +84,8 @@ if (filter_qc) {      # filter using all missing values
   ret <- mv_filter_qc(data, cls.qc, thres = thres)
 }
 
-#' Update data matrix and peak
+#' Update data matrix
 dat <- ret$dat
-pek <- peak[ret$idx, ]
 
 #' Missing values filling for visualisation
 dat_fill  <- dat %>% mv.fill(method = "median", ze_ne = T) %>% as_tibble()
@@ -211,8 +210,16 @@ plot(plslda(res_fill, cls.bl), dimen = c(1:2), ep = 2)
 #' inverse log10 transformation
 res <- 10^res %>% as_tibble()
 
-## tmp <- list(data =  res, meta = meta)
-tmp <- list(data =  res, meta = meta, peak = pek)
+tmp <- list(data =  res, meta = meta)
+## write.xlsx(tmp, file = here::here("data", paste0(FILE, "_res.xlsx")),
+##            asTable = F, overwrite = T, rowNames = F, colNames = T)
 
+## ---- QC-RLSC wrapper function ----
+#' ## QC-RLSC wrapper function
+
+#' or use wrapper function `qc_rlsc_wrap` directly
+## res <- qc_rlsc_wrap(dat, cls.qc, cls.bl, method, intra, opti, log10, outl,
+##                     shift)
+## tmp <- list(data =  res, meta = meta)
 ## write.xlsx(tmp, file = here::here("data", paste0(FILE, "_res.xlsx")),
 ##            asTable = F, overwrite = T, rowNames = F, colNames = T)
