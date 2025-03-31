@@ -33,13 +33,13 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 
   ## log transformation
   if (log10) {
-    dat[dat ==0] <- NA
+    dat[dat == 0] <- NA
     dat <- log10(dat)
   }
 
   ## QC outlier detection
   if  (outl) {
-    dat <- sapply(dat, function(x){ #' x <- dat[, 6, drop = T]
+    dat <- sapply(dat, function(x) { #' x <- dat[, 6, drop = T]
       qc_ind <- grepl("qc", cls.qc, ignore.case =  TRUE, perl = TRUE)
       ## get median of qc data
       qc_dat <- x[qc_ind]
@@ -69,7 +69,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 
   ## batch shift. sensitive to missing values
   if (shift) {
-    res <- batch_shift(res, cls.bl, overall_average = T)
+    res <- batch_shift(res, cls.bl, overall_average = TRUE)
   }
 
   ## inverse log10 transformation
@@ -392,6 +392,34 @@ mv_filter_qc <- function(x, y, thres = 0.3) {
 #' @importFrom stats median approx loess loess.control predict quantile
 #' @keywords internal
 "_PACKAGE"
+
+## ------------------------------------------------------------------------
+#' man_qc: test data for QC-RLSC
+#'
+#' This HPLC data set includes 4 batches with missing values.
+#'
+#' @format A list with data matrix and meta data:
+#' \describe{
+#' \item{data}{A data frame with 462 replicates (row) and 656 features
+#'   (column)}
+#' \item{meta}{A data frame with 2 columns:
+#'   \itemize{
+#'     \item batch: 4 batches
+#'     \item sample_type: QC and Sample
+#'   }
+#'  }
+#' }
+#' @examples
+#' man_qc
+#' t(sapply(man_qc, dim))
+#' # Select data matrix and meta data
+#' data <- man_qc$data
+#' meta <- man_qc$meta
+#' # Select batches and data types
+#' cls.qc <- factor(meta$sample_type)
+#' cls.bl <- factor(meta$batch)
+## wl-31-03-2025, Mon: Add Manchester data set for test
+"man_qc"
 
 ##  1) qc_rlsc_wrap
 ##  2) qc_rlsc
