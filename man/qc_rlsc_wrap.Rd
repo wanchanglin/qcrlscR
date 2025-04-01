@@ -49,3 +49,36 @@ A corrected data frame.
 \description{
 Wrapper function for QC-RLSC
 }
+\examples{
+names(man_qc)
+data <- man_qc$data
+meta <- man_qc$meta
+
+cls.qc <- factor(meta$sample_type)
+cls.bl <- factor(meta$batch)
+
+## apply  QC-RLSC wrapper function
+method <- "divide"     # "subtract"
+intra <- TRUE
+opti <- TRUE
+log10 <- TRUE
+outl <- TRUE
+shift <- TRUE
+
+res <- qc_rlsc_wrap(data, cls.qc, cls.bl, method, intra, opti, log10,
+                    outl, shift)
+
+\dontrun{
+## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
+
+## install.packages("mt")
+library("mt")
+
+res_fill <- res
+
+res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
+pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
+pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
+plot(pcalda(res_fill, cls.bl))
+}
+}

@@ -15,3 +15,16 @@ missing value percentage.
 \description{
 Calculate missing value percentage.
 }
+\examples{
+names(man_qc)
+data <- man_qc$data
+meta <- man_qc$meta
+## check missing value rates
+tail(sort(mv_perc(data)), 20)
+}
+\seealso{
+Other missing value processing: 
+\code{\link{mv_filter}()},
+\code{\link{mv_filter_qc}()}
+}
+\concept{missing value processing}

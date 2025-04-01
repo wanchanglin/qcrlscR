@@ -2,8 +2,8 @@ Package: qcrlscR
 Date: 26-03-2025, Wed
 Type: Package
 Title: Quality Control–based Robust LOESS Signal Correction in R
-Version: 0.1.1
-Author: Wanchang Lin
+Version: 0.1.2
+Author: Wanchang Lin, Warwick Dunn
 Maintainer: Wanchang Lin <wanchanglin@hotmail.com>
 Description: Quality control–based robust LOESS signal correction for
              metabolomics data analysis.

@@ -24,6 +24,42 @@ A corrected data frame.
 QC based robust LOESS (locally estimated scatterplot smoothing) signal
 correction (QC-RLSC)
 }
+\examples{
+names(man_qc)
+data <- man_qc$data
+meta <- man_qc$meta
+
+cls.qc <- factor(meta$sample_type)
+cls.bl <- factor(meta$batch)
+
+## apply QC-RLSC with optimisation of 'span'
+res_1 <- qc_rlsc(data, cls.qc, method = "subtract", opti = TRUE)
+
+\dontrun{
+## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
+
+## install.packages("mt")
+library("mt")
+
+res_fill <- res_1
+
+res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
+pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
+pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
+plot(pcalda(res_fill, cls.bl))
+}
+
+## apply QC-RLSC without optimisation of 'span'
+res_2 <- qc_rlsc(data, cls.qc, method = "subtract", opti = FALSE)
+
+\dontrun{
+res_fill <- res_2
+res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
+pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
+pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
+plot(pcalda(res_fill, cls.bl))
+}
+}
 \references{
 Dunn et al. Procedures for large-scale metabolic profiling of serum and
 plasma using gas chromatography and liquid chromatography coupled to

@@ -23,3 +23,23 @@ a list of with contents: \itemize{
 \description{
 Data filtering based on "qc" missing values
 }
+\examples{
+names(man_qc)
+data <- man_qc$data
+meta <- man_qc$meta
+## check missing value rates
+tail(sort(mv_perc(data)), 20)
+## missing values filtering based on QC
+cls.qc <- factor(meta$sample_type)
+tmp <- mv_filter_qc(data, cls.qc, thres = 0.15)
+data_f <- tmp$dat
+## compare
+dim(data_f)
+dim(data)
+}
+\seealso{
+Other missing value processing: 
+\code{\link{mv_filter}()},
+\code{\link{mv_perc}()}
+}
+\concept{missing value processing}

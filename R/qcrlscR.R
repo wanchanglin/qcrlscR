@@ -22,10 +22,43 @@
 #' applied after signal correction.
 #' @param ... Other parameter for 'loess'.
 #' @return  A corrected data frame.
+#' @examples
+#' names(man_qc)
+#' data <- man_qc$data
+#' meta <- man_qc$meta
+#' 
+#' cls.qc <- factor(meta$sample_type)
+#' cls.bl <- factor(meta$batch)
+#'
+#' ## apply  QC-RLSC wrapper function
+#' method <- "divide"     # "subtract"
+#' intra <- TRUE
+#' opti <- TRUE
+#' log10 <- TRUE
+#' outl <- TRUE
+#' shift <- TRUE
+#'
+#' res <- qc_rlsc_wrap(data, cls.qc, cls.bl, method, intra, opti, log10,
+#'                     outl, shift)
+#'
+#' \dontrun{
+#' ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
+#' 
+#' ## install.packages("mt")
+#' library("mt")
+#' 
+#' res_fill <- res
+#'
+#' res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
+#' pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
+#' pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
+#' plot(pcalda(res_fill, cls.bl))
+#' }
 #' @export
 ## wl-19-07-2024, Fri: wrapper function for QC-RLSC
 ## wl-27-03-2025, Thu: remove 'tidyverse', including
 ##  'res <- dplyr::bind_rows(res)'
+## wl-01-04-2025, Tue: give examples 
 qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
                          method = c("subtract", "divide"),
                          intra = FALSE, opti = TRUE, log10 = TRUE,
@@ -96,6 +129,41 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 #'  Dunn et al. Procedures for large-scale metabolic profiling of serum and
 #'  plasma using gas chromatography and liquid chromatography coupled to
 #'  mass spectrometry. Nature Protocols 6, 1060–1083 (2011)
+#' @examples
+#' names(man_qc)
+#' data <- man_qc$data
+#' meta <- man_qc$meta
+#' 
+#' cls.qc <- factor(meta$sample_type)
+#' cls.bl <- factor(meta$batch)
+#' 
+#' ## apply QC-RLSC with optimisation of 'span'
+#' res_1 <- qc_rlsc(data, cls.qc, method = "subtract", opti = TRUE)
+#'
+#' \dontrun{
+#' ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
+#' 
+#' ## install.packages("mt")
+#' library("mt")
+#' 
+#' res_fill <- res_1
+#'
+#' res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
+#' pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
+#' pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
+#' plot(pcalda(res_fill, cls.bl))
+#' }
+#' 
+#' ## apply QC-RLSC without optimisation of 'span'
+#' res_2 <- qc_rlsc(data, cls.qc, method = "subtract", opti = FALSE)
+#'
+#' \dontrun{
+#' res_fill <- res_2
+#' res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
+#' pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
+#' pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
+#' plot(pcalda(res_fill, cls.bl))
+#' }
 #' @export
 ## wl-14-08-2023, Mon: QC-RLSC
 ##   Note that the variables are divided by predicted values using qc-based
@@ -109,6 +177,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 ##   values. Should filter based on each batch or lower down threshold
 ## wl-08-07-2024, Mon: call 'loess_gcv' for optimisation span
 ## wl-30-07-2024, Tue: use less.control for extrapolation
+## wl-01-04-2025, Tue: give examples 
 qc_rlsc <- function(x, y, method = c("subtract", "divide"), opti = TRUE,
                     ...) {
   method <- match.arg(method)
@@ -227,12 +296,20 @@ loess_gcv <- function(x, y, span.range = c(.05, .95), ...) {
 #'   Silvia Wagner, et.al, Tools in Metabonomics: An Integrated Validation
 #'   Approach for LC-MS Metabolic Profiling of Mercapturic Acids in Human
 #'   Urine Anal. Chem., 2007, 79 (7), pp 2918-2926, DOI: 10.1021/ac062153w
+#' @examples
+#' names(man_qc)
+#' data <- man_qc$data
+#' meta <- man_qc$meta
+#' ## batch shifting
+#' cls.bl <- factor(meta$batch)
+#' res <- batch_shift(data, cls.bl, overall_average = TRUE)
 #' @export
 ## wl-07-07-2011, Thu: Batch shifting: remove mean within each batch/block
 ## wl-03-07-2024, Wed: Minor changes
 ##  - Very sensitive with missing values.
 ##  - Shift to overall average
 ## wl-18-07-2024, Thu: fix a bug
+## wl-01-04-2025, Tue: give examples 
 batch_shift <- function(x, y, method = "mean", overall_average = TRUE) {
   x <- as.data.frame(x)
   ## overall
@@ -299,8 +376,16 @@ outl_det_u <- function(x, method = c("percentile", "median")) {
 #'
 #' @param x an vector, matrix or data frame.
 #' @return missing value percentage.
+#' @family missing value processing
+#' @examples
+#' names(man_qc)
+#' data <- man_qc$data
+#' meta <- man_qc$meta
+#' ## check missing value rates
+#' tail(sort(mv_perc(data)), 20)
 #' @export
 ## wl-24-11-2021, Wed: extract from 'mv.stats' in 'mt'.
+## wl-01-04-2025, Tue: give examples 
 mv_perc <- function(x) {
   if (is.matrix(x)) {
     apply(x, 2, mv_perc)
@@ -327,10 +412,24 @@ mv_perc <- function(x) {
 #'  \item dat the filtered data matrix
 #'  \item idx a logical vector of index for keeping features.
 #' }
+#' @family missing value processing
+#' @examples
+#' names(man_qc)
+#' data <- man_qc$data
+#' meta <- man_qc$meta
+#' ## check missing value rates
+#' tail(sort(mv_perc(data)), 20)
+## missing values filtering
+#' tmp <- mv_filter(data, thres = 0.15)
+#' data_f <- tmp$dat
+#' ## compare
+#' dim(data_f)
+#' dim(data)
 #' @export
-## wl-14-06-2011, Tue: Filter features based on the percentage of MVs
+## wl-14-06-2011, Tue: filter features based on the percentage of MVs
 ## wl-17-06-2021, Thu: several version but this one is simple. Need to test
 ## wl-06-11-2018, Tue: feature filter index based on missing values
+## wl-01-04-2025, Tue: give examples 
 mv_filter <- function(x, thres = 0.3) {
 
   if (!(is.matrix(x) || is.data.frame(x))) {
@@ -362,10 +461,25 @@ mv_filter <- function(x, thres = 0.3) {
 #'  \item dat the filtered data matrix
 #'  \item idx a logical vector of index for keeping features.
 #' }
+#' @family missing value processing
+#' @examples
+#' names(man_qc)
+#' data <- man_qc$data
+#' meta <- man_qc$meta
+#' ## check missing value rates
+#' tail(sort(mv_perc(data)), 20)
+#' ## missing values filtering based on QC
+#' cls.qc <- factor(meta$sample_type)
+#' tmp <- mv_filter_qc(data, cls.qc, thres = 0.15)
+#' data_f <- tmp$dat
+#' ## compare
+#' dim(data_f)
+#' dim(data)
 #' @export
 ## wl-14-06-2011, Tue: Filter features based on missing values in QC
 ## wl-01-07-2024, Mon: Review and minor change. different from 'qc_filter'
 ##   in 'mtExtra'.
+## wl-01-04-2025, Tue: give examples 
 mv_filter_qc <- function(x, y, thres = 0.3) {
   tmp <- grep("qc", y, ignore.case =  TRUE, perl = TRUE)
   idx <- mv_filter(x[tmp, , drop = FALSE], thres = thres)$idx

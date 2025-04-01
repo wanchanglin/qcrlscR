@@ -22,3 +22,21 @@ a list of with contents: \itemize{
 This function calculates the percentage of missing values and keeps those
 features with missing values percentage less than the designed threshold.
 }
+\examples{
+names(man_qc)
+data <- man_qc$data
+meta <- man_qc$meta
+## check missing value rates
+tail(sort(mv_perc(data)), 20)
+tmp <- mv_filter(data, thres = 0.15)
+data_f <- tmp$dat
+## compare
+dim(data_f)
+dim(data)
+}
+\seealso{
+Other missing value processing: 
+\code{\link{mv_filter_qc}()},
+\code{\link{mv_perc}()}
+}
+\concept{missing value processing}

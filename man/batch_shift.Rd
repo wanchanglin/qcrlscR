@@ -22,6 +22,14 @@ a shifted data matrix.
 \description{
 Remove batch effect withing each block.
 }
+\examples{
+names(man_qc)
+data <- man_qc$data
+meta <- man_qc$meta
+## batch shifting
+cls.bl <- factor(meta$batch)
+res <- batch_shift(data, cls.bl, overall_average = TRUE)
+}
 \references{
 Silvia Wagner, et.al, Tools in Metabonomics: An Integrated Validation
 Approach for LC-MS Metabolic Profiling of Mercapturic Acids in Human
