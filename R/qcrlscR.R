@@ -11,17 +11,20 @@
 #' @param cls.bl A vector with string of batch indicators.
 #' @param method Data scaling method. Support "subtract" and "divide"
 #' @param intra A logical value indicating whether signal correction is
-#'   performed inside each batch.
+#'   performed inside each batch ("intra-batch") or not ("inter-batch").
 #' @param opti A logical value indicating whether or not 'span' parameters
 #'   are optimised.
 #' @param log10 A logical value indicating whether log10 transformation for
-#'   the data set or not.
+#'   the data set or not. If the transformation is applied, the reverse
+#'   procedure will be performed.  
 #' @param outl A logical value indicating whether or not QC outlier
-#'   detection is employed.
+#'   detection is employed. If TRUE, the QC outlier will be assigned as the 
+#'   median of QC. 
 #' @param shift A logical value indicating whether or not batch shift is
 #' applied after signal correction.
 #' @param ... Other parameter for 'loess'.
 #' @return  A corrected data frame.
+#' @family QC-RLSC function
 #' @examples
 #' names(man_qc)
 #' data <- man_qc$data
@@ -56,8 +59,7 @@
 #' }
 #' @export
 ## wl-19-07-2024, Fri: wrapper function for QC-RLSC
-## wl-27-03-2025, Thu: remove 'tidyverse', including
-##  'res <- dplyr::bind_rows(res)'
+## wl-27-03-2025, Thu: remove 'tidyverse'
 ## wl-01-04-2025, Tue: give examples 
 qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
                          method = c("subtract", "divide"),
@@ -125,10 +127,24 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 #' @param opti A logical value indicating whether or not optimise 'span'
 #' @param ... Other parameter for 'loess'.
 #' @return  A corrected data frame.
+#' @family QC-RLSC function
+#' @details 
+#'   This function includes only information of sample types (`QC` or
+#'   `Sample`) for signal correction. It does not require batch information.
+#'   User may use batch elimination routine such as `batch_shift()` in this
+#'   package or others to remove batch effects after signal correction. 
+#' 
+#'   If data matrix has missing values, user should filter the data based on
+#'   missing values percentage. No missing values imputation is needed. 
+#' 
+#'   An option is also provided to optimise LOESS's `span` in a range 
+#'   between 0.05 to 0.95. The R codes are modified from 
+#'   https://bit.ly/3zBo3Qn.
+#' 
 #' @references
-#'  Dunn et al. Procedures for large-scale metabolic profiling of serum and
-#'  plasma using gas chromatography and liquid chromatography coupled to
-#'  mass spectrometry. Nature Protocols 6, 1060–1083 (2011)
+#'   Dunn et al. Procedures for large-scale metabolic profiling of serum and
+#'   plasma using gas chromatography and liquid chromatography coupled to
+#'   mass spectrometry. Nature Protocols 6, 1060–1083 (2011)
 #' @examples
 #' names(man_qc)
 #' data <- man_qc$data
@@ -492,16 +508,21 @@ mv_filter_qc <- function(x, y, thres = 0.3) {
 #' signal correction for metabolomics data analysis.
 #'
 #' @section Main functions:
-#' The `qcrlscR` provides functions for signal correction for metabolomics
-#' data analysis. It allows users to optimise `span` for LOESS. This package
-#' also provides simple functions for univariate outlier detection and
-#' missing value filtering. Users need to use other R packages for missing
-#' value filling before applying this package if the data set has missing
-#' values.
+#' The `qcrlscR` provides functions for metabolomics data signal correction.
+#' It allows users to optimise `span` for LOESS in the range of 0.05 and
+#' 0.95. This package also provides simple functions for
+#' missing value filtering. If the data set used for signal correction has
+#' large portion of missing values, users need to filter the data based on 
+#' percentage of missing values. A straightforward batch shifting function is 
+#' provided for batch elimination if the batch effects are still present
+#' after QC-SLRC process. User can use other R packages's PCA plot
+#' (un-supervised) or PLS and LDA plots (supervised) to assess the goodness
+#' of signal correction.
 #'
 #' @section Package context:
 #' This package does not use "tidyverse" and only uses basic R for
-#' simplicity and easy maintenance.
+#' simplicity and easy maintenance. A vignette (in R and PDF format) is
+#' located in `\qcrlsc\examples`.
 #'
 #' @importFrom stats median approx loess loess.control predict quantile
 #' @keywords internal

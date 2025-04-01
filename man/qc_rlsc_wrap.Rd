@@ -27,16 +27,18 @@ qc_rlsc_wrap(
 \item{method}{Data scaling method. Support "subtract" and "divide"}
 
 \item{intra}{A logical value indicating whether signal correction is
-performed inside each batch.}
+performed inside each batch ("intra-batch") or not ("inter-batch").}
 
 \item{opti}{A logical value indicating whether or not 'span' parameters
 are optimised.}
 
 \item{log10}{A logical value indicating whether log10 transformation for
-the data set or not.}
+the data set or not. If the transformation is applied, the reverse
+procedure will be performed.}
 
 \item{outl}{A logical value indicating whether or not QC outlier
-detection is employed.}
+detection is employed. If TRUE, the QC outlier will be assigned as the
+median of QC.}
 
 \item{shift}{A logical value indicating whether or not batch shift is
 applied after signal correction.}
@@ -82,3 +84,8 @@ pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
 plot(pcalda(res_fill, cls.bl))
 }
 }
+\seealso{
+Other QC-RLSC function: 
+\code{\link{qc_rlsc}()}
+}
+\concept{QC-RLSC function}

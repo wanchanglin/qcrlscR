@@ -24,6 +24,19 @@ A corrected data frame.
 QC based robust LOESS (locally estimated scatterplot smoothing) signal
 correction (QC-RLSC)
 }
+\details{
+This function includes only information of sample types (\code{QC} or
+\code{Sample}) for signal correction. It does not require batch information.
+User may use batch elimination routine such as \code{batch_shift()} in this
+package or others to remove batch effects after signal correction.
+
+If data matrix has missing values, user should filter the data based on
+missing values percentage. No missing values imputation is needed.
+
+An option is also provided to optimise LOESS's \code{span} in a range
+between 0.05 to 0.95. The R codes are modified from
+https://bit.ly/3zBo3Qn.
+}
 \examples{
 names(man_qc)
 data <- man_qc$data
@@ -65,3 +78,8 @@ Dunn et al. Procedures for large-scale metabolic profiling of serum and
 plasma using gas chromatography and liquid chromatography coupled to
 mass spectrometry. Nature Protocols 6, 1060–1083 (2011)
 }
+\seealso{
+Other QC-RLSC function: 
+\code{\link{qc_rlsc_wrap}()}
+}
+\concept{QC-RLSC function}

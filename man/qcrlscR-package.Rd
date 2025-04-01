@@ -11,18 +11,23 @@ signal correction for metabolomics data analysis.
 }
 \section{Main functions}{
 
-The \code{qcrlscR} provides functions for signal correction for metabolomics
-data analysis. It allows users to optimise \code{span} for LOESS. This package
-also provides simple functions for univariate outlier detection and
-missing value filtering. Users need to use other R packages for missing
-value filling before applying this package if the data set has missing
-values.
+The \code{qcrlscR} provides functions for metabolomics data signal correction.
+It allows users to optimise \code{span} for LOESS in the range of 0.05 and
+0.95. This package also provides simple functions for
+missing value filtering. If the data set used for signal correction has
+large portion of missing values, users need to filter the data based on
+percentage of missing values. A straightforward batch shifting function is
+provided for batch elimination if the batch effects are still present
+after QC-SLRC process. User can use other R packages's PCA plot
+(un-supervised) or PLS and LDA plots (supervised) to assess the goodness
+of signal correction.
 }
 
 \section{Package context}{
 
 This package does not use "tidyverse" and only uses basic R for
-simplicity and easy maintenance.
+simplicity and easy maintenance. A vignette (in R and PDF format) is
+located in \verb{\\qcrlsc\\examples}.
 }
 
 \seealso{
