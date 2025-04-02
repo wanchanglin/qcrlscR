@@ -1,4 +1,8 @@
 
+# qcrlscR 0.1.3: (02-04-2025, Wed)
+
+- Change function names to avoid name conflict with other R packages.
+
 # qcrlscR 0.1.2: (01-04-2025, Tue)
 
 - add examples for all output functions

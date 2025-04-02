@@ -1,5 +1,6 @@
 ## Functions for QC-RLSC
-## wl-27-03-2025, Thu: Prepare for devtools::check()
+## wl-27-03-2025, Thu: Commence
+## wl-02-04-2025, Wed: change function names to avoid conflict
 
 ## -----------------------------------------------------------------------
 #' Wrapper function for QC-RLSC
@@ -41,7 +42,7 @@
 #' outl <- TRUE
 #' shift <- TRUE
 #'
-#' res <- qc_rlsc_wrap(data, cls.qc, cls.bl, method, intra, opti, log10,
+#' res <- qc.rlsc.wrap(data, cls.qc, cls.bl, method, intra, opti, log10,
 #'                     outl, shift)
 #'
 #' \dontrun{
@@ -61,7 +62,7 @@
 ## wl-19-07-2024, Fri: wrapper function for QC-RLSC
 ## wl-27-03-2025, Thu: remove 'tidyverse'
 ## wl-01-04-2025, Tue: give examples 
-qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
+qc.rlsc.wrap <- function(dat, cls.qc, cls.bl,
                          method = c("subtract", "divide"),
                          intra = FALSE, opti = TRUE, log10 = TRUE,
                          outl = TRUE, shift = TRUE, ...) {
@@ -83,7 +84,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
       tmp <- x
       tmp[!qc_ind] <- NA
       ## QC outlier detection
-      out_ind <- outl_det_u(tmp)
+      out_ind <- outl.det.u(tmp)
       ## assign outlier as qc median
       x[out_ind] <- qc_median
       return(x)
@@ -93,18 +94,18 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 
   ## QC-RLSC
   if (!intra) {
-    res <- qc_rlsc(dat, cls.qc, method = method, opti = opti)
+    res <- qc.rlsc(dat, cls.qc, method = method, opti = opti)
   } else { # wl-16-08-2023, Wed: do signal correction inside each batch
     res <- lapply(levels(cls.bl), function(x) {
       idx <- cls.bl %in% x
-      tmp <- qc_rlsc(dat[idx,], cls.qc[idx], method = method, opti = opti)
+      tmp <- qc.rlsc(dat[idx,], cls.qc[idx], method = method, opti = opti)
     })
     res <- do.call(rbind, res)
   }
 
   ## batch shift. sensitive to missing values
   if (shift) {
-    res <- batch_shift(res, cls.bl, overall_average = TRUE)
+    res <- batch.shift(res, cls.bl, overall_average = TRUE)
   }
 
   ## inverse log10 transformation
@@ -131,7 +132,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 #' @details 
 #'   This function includes only information of sample types (`QC` or
 #'   `Sample`) for signal correction. It does not require batch information.
-#'   User may use batch elimination routine such as `batch_shift()` in this
+#'   User may use batch elimination routine such as `batch.shift()` in this
 #'   package or others to remove batch effects after signal correction. 
 #' 
 #'   If data matrix has missing values, user should filter the data based on
@@ -154,7 +155,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 #' cls.bl <- factor(meta$batch)
 #' 
 #' ## apply QC-RLSC with optimisation of 'span'
-#' res_1 <- qc_rlsc(data, cls.qc, method = "subtract", opti = TRUE)
+#' res_1 <- qc.rlsc(data, cls.qc, method = "subtract", opti = TRUE)
 #'
 #' \dontrun{
 #' ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
@@ -171,7 +172,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 #' }
 #' 
 #' ## apply QC-RLSC without optimisation of 'span'
-#' res_2 <- qc_rlsc(data, cls.qc, method = "subtract", opti = FALSE)
+#' res_2 <- qc.rlsc(data, cls.qc, method = "subtract", opti = FALSE)
 #'
 #' \dontrun{
 #' res_fill <- res_2
@@ -194,7 +195,7 @@ qc_rlsc_wrap <- function(dat, cls.qc, cls.bl,
 ## wl-08-07-2024, Mon: call 'loess_gcv' for optimisation span
 ## wl-30-07-2024, Tue: use less.control for extrapolation
 ## wl-01-04-2025, Tue: give examples 
-qc_rlsc <- function(x, y, method = c("subtract", "divide"), opti = TRUE,
+qc.rlsc <- function(x, y, method = c("subtract", "divide"), opti = TRUE,
                     ...) {
   method <- match.arg(method)
 
@@ -318,7 +319,7 @@ loess_gcv <- function(x, y, span.range = c(.05, .95), ...) {
 #' meta <- man_qc$meta
 #' ## batch shifting
 #' cls.bl <- factor(meta$batch)
-#' res <- batch_shift(data, cls.bl, overall_average = TRUE)
+#' res <- batch.shift(data, cls.bl, overall_average = TRUE)
 #' @export
 ## wl-07-07-2011, Thu: Batch shifting: remove mean within each batch/block
 ## wl-03-07-2024, Wed: Minor changes
@@ -326,7 +327,7 @@ loess_gcv <- function(x, y, span.range = c(.05, .95), ...) {
 ##  - Shift to overall average
 ## wl-18-07-2024, Thu: fix a bug
 ## wl-01-04-2025, Tue: give examples 
-batch_shift <- function(x, y, method = "mean", overall_average = TRUE) {
+batch.shift <- function(x, y, method = "mean", overall_average = TRUE) {
   x <- as.data.frame(x)
   ## overall
   o.mean <- sapply(x, method, na.rm = T)
@@ -363,12 +364,12 @@ batch_shift <- function(x, y, method = "mean", overall_average = TRUE) {
 #'    IQR, or larger than the 3rd quartile plus 1.5 times of IQR.
 #' @examples
 #' x <- c(2, 3, 4, 5, 6, 7, NA, 9, 50, 50)
-#' outl_det_u(x, "percentile")
+#' outl.det.u(x, "percentile")
 #' @export
 ## wl-19-09-2020, Sat: Univariate outlier detection.
 ##   Modified from R package GmAMisc.
 ## wl-17-07-2024, Wed: add 'na.rm' for missing values
-outl_det_u <- function(x, method = c("percentile", "median")) {
+outl.det.u <- function(x, method = c("percentile", "median")) {
   method <- match.arg(method)
   if (method == "median") {
     med <- median(x, na.rm = TRUE)
@@ -398,17 +399,17 @@ outl_det_u <- function(x, method = c("percentile", "median")) {
 #' data <- man_qc$data
 #' meta <- man_qc$meta
 #' ## check missing value rates
-#' tail(sort(mv_perc(data)), 20)
+#' tail(sort(mv.perc(data)), 20)
 #' @export
 ## wl-24-11-2021, Wed: extract from 'mv.stats' in 'mt'.
 ## wl-01-04-2025, Tue: give examples 
-mv_perc <- function(x) {
+mv.perc <- function(x) {
   if (is.matrix(x)) {
-    apply(x, 2, mv_perc)
+    apply(x, 2, mv.perc)
   } else if (is.vector(x)) {
     round(sum(is.na(x) | is.nan(x)) / length(x), digits = 3)
   } else if (is.data.frame(x)) {
-    sapply(x, mv_perc)
+    sapply(x, mv.perc)
   } else {
     round(sum(is.na(as.vector(x)) | is.nan(as.vector(x))) /
           length(as.vector(x)), digits = 3)
@@ -434,9 +435,9 @@ mv_perc <- function(x) {
 #' data <- man_qc$data
 #' meta <- man_qc$meta
 #' ## check missing value rates
-#' tail(sort(mv_perc(data)), 20)
+#' tail(sort(mv.perc(data)), 20)
 ## missing values filtering
-#' tmp <- mv_filter(data, thres = 0.15)
+#' tmp <- mv.filter(data, thres = 0.15)
 #' data_f <- tmp$dat
 #' ## compare
 #' dim(data_f)
@@ -446,7 +447,7 @@ mv_perc <- function(x) {
 ## wl-17-06-2021, Thu: several version but this one is simple. Need to test
 ## wl-06-11-2018, Tue: feature filter index based on missing values
 ## wl-01-04-2025, Tue: give examples 
-mv_filter <- function(x, thres = 0.3) {
+mv.filter <- function(x, thres = 0.3) {
 
   if (!(is.matrix(x) || is.data.frame(x))) {
     stop("\n'data' is not matrix or data frame.\n")
@@ -483,10 +484,10 @@ mv_filter <- function(x, thres = 0.3) {
 #' data <- man_qc$data
 #' meta <- man_qc$meta
 #' ## check missing value rates
-#' tail(sort(mv_perc(data)), 20)
+#' tail(sort(mv.perc(data)), 20)
 #' ## missing values filtering based on QC
 #' cls.qc <- factor(meta$sample_type)
-#' tmp <- mv_filter_qc(data, cls.qc, thres = 0.15)
+#' tmp <- mv.filter.qc(data, cls.qc, thres = 0.15)
 #' data_f <- tmp$dat
 #' ## compare
 #' dim(data_f)
@@ -496,9 +497,9 @@ mv_filter <- function(x, thres = 0.3) {
 ## wl-01-07-2024, Mon: Review and minor change. different from 'qc_filter'
 ##   in 'mtExtra'.
 ## wl-01-04-2025, Tue: give examples 
-mv_filter_qc <- function(x, y, thres = 0.3) {
+mv.filter.qc <- function(x, y, thres = 0.3) {
   tmp <- grep("qc", y, ignore.case =  TRUE, perl = TRUE)
-  idx <- mv_filter(x[tmp, , drop = FALSE], thres = thres)$idx
+  idx <- mv.filter(x[tmp, , drop = FALSE], thres = thres)$idx
   x <- x[, idx, drop = FALSE]
   return(list(dat = x, idx = idx))
 }
@@ -556,11 +557,11 @@ mv_filter_qc <- function(x, y, thres = 0.3) {
 ## wl-31-03-2025, Mon: Add Manchester data set for test
 "man_qc"
 
-##  1) qc_rlsc_wrap
-##  2) qc_rlsc
+##  1) qc.rlsc.wrap
+##  2) qc.rlsc
 ##  3) loess_gcv
-##  4) batch_shift
-##  5) outl_det_u
-##  6) mv_perc
-##  7) mv_filter
-##  8) mv_filter_qc
+##  4) batch.shift
+##  5) outl.det.u
+##  6) mv.perc
+##  7) mv.filter
+##  8) mv.filter.qc

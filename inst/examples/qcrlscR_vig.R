@@ -30,8 +30,7 @@
 #+ common, include=F
 rm(list = ls(all = TRUE))
 options(help_type = "html")
-pkgs <- c("qcrlscR", "mt", "tidyverse", "knitr", "tictoc")
-invisible(lapply(pkgs, library, character.only = TRUE))
+library(knitr)
 opts_chunk$set(
   collapse = TRUE,
   cache = TRUE,
@@ -51,10 +50,24 @@ opts_chunk$set(
   fig.show = "hold"
 )
 
+## ---- Load libraries ----
+#' ## Load libraries
+
+#' The first step is to load necessary libraries. `mt` is used to plot
+#' PCA, PLS and LDA plots to access performance of signal correction.
+#' `tictoc` records the running time, especially for the optimisation of
+#' LOESS.
+
+#+ message=F
+pkgs <- c("qcrlscR", "mt", "tidyverse", "tictoc")
+## install.packages(pkgs)
+invisible(lapply(pkgs, library, character.only = TRUE))
+
 ## ---- Read data ----
 #' ## Read data
 
-#' Check the data
+#' The data used is `man_qc` in package `qcrlscR`. This data set is a list
+#' of two data frames, `data` and `meta`.
 names(man_qc)
 t(sapply(man_qc, dim))
 
@@ -65,29 +78,33 @@ data <- man_qc$data %>%
 
 #' Extract group information of batch and sample types
 names(meta)
-(cls.qc <- factor(meta$sample_type))
-(cls.bl <- factor(meta$batch))
+cls.qc <- factor(meta$sample_type)
+table(cls.qc)
+
+cls.bl <- factor(meta$batch)
+table(cls.bl)
 
 ## ---- Missing value filter and fill ----
 #' ## Missing value filter and fill
 
 #' Check missing value rates
-tail(sort(mv_perc(data)), 20)
+tail(sort(mv.perc(data)), 20)
 
 #' Filter based on missing values
-filter_qc <- FALSE    # filter on qc missing values or all missing values
-thres <- 0.2           # threshold for filtering
+filter_qc <- FALSE      # filter on qc missing values or all missing values
+thres <- 0.15           # threshold for filtering
 
 if (filter_qc) {      # filter using all missing values
-  ret <- mv_filter(data, thres = thres)
+  ret <- mv.filter(data, thres = thres)
 } else {              # filter using qc missing values
-  ret <- mv_filter_qc(data, cls.qc, thres = thres)
+  ret <- mv.filter.qc(data, cls.qc, thres = thres)
 }
 
 #' Update data matrix
 dat <- ret$dat
 
-#' Missing values filling for visualisation
+#' Missing values filling for visualisation `'mv.fill` is in R package
+#' `mt`)
 dat_fill  <- dat %>% mv.fill(method = "median", ze_ne = T) %>% as_tibble()
 
 #' Data screening before signal correction
@@ -137,7 +154,7 @@ if (outl) {
     tmp <- x
     tmp[!qc_ind] <- NA
     ## QC outlier detection
-    out_ind <- outl_det_u(tmp)
+    out_ind <- outl.det.u(tmp)
     ## assign outlier as qc median
     x[out_ind] <- qc_median
     return(x)
@@ -151,7 +168,7 @@ dat
 #' perform qc-rlsc within each batch or not
 tic()
 if (!intra) {
-  res <- qc_rlsc(dat, cls.qc, method = method, opti = opti)
+  res <- qc.rlsc(dat, cls.qc, method = method, opti = opti)
 } else { # do signal correction inside each batch
   res <- lapply(levels(cls.bl), function(x) {
     idx <- cls.bl %in% x
@@ -183,7 +200,7 @@ plot(plslda(res_fill, cls.bl), dimen = c(1:2), ep = 2)
 #' ## Batch shift
 
 if (shift) {
-  res <- batch_shift(res, cls.bl, overall_average = T) %>% as_tibble()
+  res <- batch.shift(res, cls.bl, overall_average = T) %>% as_tibble()
 }
 
 #' Data visualisation after batch shift
@@ -218,7 +235,7 @@ tmp <- list(data =  res, meta = meta)
 #' ## QC-RLSC wrapper function
 
 #' or use wrapper function `qc_rlsc_wrap` directly
-## res <- qc_rlsc_wrap(dat, cls.qc, cls.bl, method, intra, opti, log10, outl,
+## res <- qc.rlsc.wrap(dat, cls.qc, cls.bl, method, intra, opti, log10, outl,
 ##                     shift)
 ## tmp <- list(data =  res, meta = meta)
 ## write.xlsx(tmp, file = here::here("data", paste0(FILE, "_res.xlsx")),
