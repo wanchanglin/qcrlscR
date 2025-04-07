@@ -53,10 +53,11 @@ opts_chunk$set(
 ## ---- Load libraries ----
 #' ## Load libraries
 
-#' The first step is to load necessary libraries. `mt` is used to plot
-#' PCA, PLS and LDA plots to access performance of signal correction.
-#' `tictoc` records the running time, especially for the optimisation of
-#' LOESS.
+#' R package `mt` is used to plot PCA, PLS and LDA plots to assess
+#' performance of signal correction implemented in R package `qcrlscR`. R
+#' package `tityverse` fulfils some data crunch operations and `tictoc`
+#' records the running time, especially for the optimisation of LOESS. All
+#' of these packages are available in the CRAN package repository.  
 
 #+ message=F
 pkgs <- c("qcrlscR", "mt", "tidyverse", "tictoc")
@@ -66,17 +67,17 @@ invisible(lapply(pkgs, library, character.only = TRUE))
 ## ---- Read data ----
 #' ## Read data
 
-#' The data used is `man_qc` in package `qcrlscR`. This data set is a list
-#' of two data frames, `data` and `meta`.
+#' The data `man_qc` in package `qcrlscR` is a list of two data frames,
+#' `data` and `meta`. 
 names(man_qc)
 t(sapply(man_qc, dim))
 
-#' Get meta and data matrix
+#' Get meta and data matrix:
 meta <- man_qc$meta
 data <- man_qc$data %>%
   mutate_if(is.character, as.numeric)
 
-#' Extract group information of batch and sample types
+#' Extract group information of batch and sample types from meta:
 names(meta)
 cls.qc <- factor(meta$sample_type)
 table(cls.qc)
@@ -84,13 +85,17 @@ table(cls.qc)
 cls.bl <- factor(meta$batch)
 table(cls.bl)
 
-## ---- Missing value filter and fill ----
-#' ## Missing value filter and fill
+## ---- Missing value filter ----
+#' ## Missing value filter
 
-#' Check missing value rates
+#' Before signal correction, the data should be checked based on the missing
+#' values rate and filtered if the rate is higher than the threshold, such
+#' as 20%.
+#'
+#' Check missing value rates:
 tail(sort(mv.perc(data)), 20)
 
-#' Filter based on missing values
+#' Filter data matrix based on missing values rate:
 filter_qc <- FALSE      # filter on qc missing values or all missing values
 thres <- 0.15           # threshold for filtering
 
@@ -100,22 +105,30 @@ if (filter_qc) {      # filter using all missing values
   ret <- mv.filter.qc(data, cls.qc, thres = thres)
 }
 
-#' Update data matrix
+#' Update data matrix after filtering:
 dat <- ret$dat
 
-#' Missing values filling for visualisation `'mv.fill` is in R package
-#' `mt`)
+#' Missing value imputation is not required in `qcrlscR` but visualisation
+#' of a data matrix, like PCA and LDA plots, does not allow the missing
+#' values. Here the missing value filling is used to data screening before
+#' and after signal correction.
+#'
+#' `mv.fill` in R package `mt` is used here for missing value imputation.
+#' It should be noted that there are a lot of R package available for such
+#' purpose in CRAN repository.
 dat_fill  <- dat %>% mv.fill(method = "median", ze_ne = T) %>% as_tibble()
 
-#' Data screening before signal correction
-
-#' PCA plot for sample types
+#' Two categories methods, unsupervised method, PCA, and supervised methods,
+#' PLS and PCA-LDA, are used for data screening before and after signal
+#' correction.
+#'
+#' PCA plot for sample types:
 pcaplot(dat_fill, cls.qc, pcs = c(2, 1), ep = 1)
 
-#' PCA plot for batches
+#' PCA plot for batches:
 pcaplot(dat_fill, cls.bl, pcs = c(2, 1), ep = 1)
 
-#' LDA plot for batches
+#' LDA plot for batches:
 plot(pcalda(dat_fill, cls.bl))
 
 #' LDA plot of batches: LD1 vs LD2 (only for batch groups larger than 2)
@@ -127,23 +140,27 @@ plot(plslda(dat_fill, cls.bl), dimen = c(1:2), ep = 2)
 ## ---- Set parameters for QC-RLSC ----
 #' ## Set parameters for QC-RLSC
 
-method <- "subtract"  # two methods: "subtract", "divide"
-intra <- F            # signal correction within batch or not
-opti <- T             # optimise smooth parameter  or not
+#' Some parameters for signal correction:
 log10 <- T            # log 10 transform data or not
 outl <- T             # outlier detect in qc samples or not
+intra <- F            # signal correction within batch or not
+method <- "subtract"  # two methods: "subtract", "divide"
+opti <- T             # optimise smooth parameter  or not
 shift <- T            # batch shift or not
 
-## ---- QC outlier detection ----
-#' ## QC outlier detection
+## ---- Logarithmic transformation ----
+#' ## Logarithmic transformation
 
-#' log transformation
+#' Log transformation or not:
 if (log10) {
   dat[dat == 0] <- NA
   dat <- log10(dat)
 }
 
-#' outlier detection based on QC
+## ---- QC outlier detection ----
+#' ## QC outlier detection
+
+#' Outlier detection based on QC or not:
 if (outl) {
   dat <- sapply(dat, function(x) { #' x <- dat[, 6, drop = T]
     qc_ind <- grepl("qc", cls.qc, ignore.case =  TRUE, perl = TRUE)
@@ -162,32 +179,40 @@ if (outl) {
 }
 dat
 
+#' User can outlier detection methods provided by other R packages.
+#' Here `qcrlscR` only implements a simple univariate method, and detected
+#' outliers are replaced with the median values of QC data points.
+
 ## ---- QC-RLSC ----
 #' ## QC-RLSC
 
-#' perform qc-rlsc within each batch or not
+#' Perform qc-rlsc within each batch or not (intra batch or inter batch):
 tic()
 if (!intra) {
   res <- qc.rlsc(dat, cls.qc, method = method, opti = opti)
 } else { # do signal correction inside each batch
   res <- lapply(levels(cls.bl), function(x) {
     idx <- cls.bl %in% x
-    tmp <- qc_rlsc(dat[idx,], cls.qc[idx], method = method, opti = opti)
+    tmp <- qc.rlsc(dat[idx,], cls.qc[idx], method = method, opti = opti)
   })
   res <- bind_rows(res)
 }
 toc()
 
-#' Data visualisation after signal correction
+#' `qcrlscR` can optimise smoothing span in a range of 0.05 and 0.95,
+#' controlled by a binary option `opti` in function `qc.rlsc` and
+#' `qc.rlsc.wrap`.
+#'
+#' Data visualisation after signal correction:
 res_fill  <- res %>% mv.fill(method = "median", ze_ne = T) %>% as_tibble()
 
-#' PCA plot for sample types
+#' PCA plot for sample types:
 pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
 
-#' PCA plot for batches
+#' PCA plot for batches:
 pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
 
-#' LDA plot for batches
+#' LDA plot for batches:
 plot(pcalda(res_fill, cls.bl))
 
 #' LDA plot of batches: LD1 vs LD2 (only for batch groups larger than 2)
@@ -199,20 +224,22 @@ plot(plslda(res_fill, cls.bl), dimen = c(1:2), ep = 2)
 ## ---- Batch shift ----
 #' ## Batch shift
 
+#' If the batch effects are still in the data set, a straightforward batch
+#' shifting method can be applied:
 if (shift) {
   res <- batch.shift(res, cls.bl, overall_average = T) %>% as_tibble()
 }
 
-#' Data visualisation after batch shift
+#' Data visualisation after batch shift:
 res_fill  <- res %>% mv.fill(method = "median", ze_ne = T) %>% as_tibble()
 
-#' PCA plot for sample types
+#' PCA plot for sample types:
 pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
 
-#' PCA plot for batches
+#' PCA plot for batches:
 pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
 
-#' LDA plot for batches
+#' LDA plot for batches:
 plot(pcalda(res_fill, cls.bl))
 
 #' LDA plot of batches: LD1 vs LD2 (only for batch groups larger than 2)
@@ -224,19 +251,24 @@ plot(plslda(res_fill, cls.bl), dimen = c(1:2), ep = 2)
 ## ---- Save results ----
 #' ## Save results
 
-#' inverse log10 transformation
-res <- 10^res %>% as_tibble()
+#' Inverse log10 transformation:
+if (log10) {
+  res <- 10^res %>% as_tibble()
+}
 
+#+ qcrlsc_save, eval=F, include=T
 tmp <- list(data =  res, meta = meta)
-## write.xlsx(tmp, file = here::here("data", paste0(FILE, "_res.xlsx")),
-##            asTable = F, overwrite = T, rowNames = F, colNames = T)
+write.xlsx(tmp, file = here::here("data", paste0(FILE, "_res.xlsx")),
+           asTable = F, overwrite = T, rowNames = F, colNames = T)
 
 ## ---- QC-RLSC wrapper function ----
 #' ## QC-RLSC wrapper function
 
-#' or use wrapper function `qc_rlsc_wrap` directly
-## res <- qc.rlsc.wrap(dat, cls.qc, cls.bl, method, intra, opti, log10, outl,
-##                     shift)
-## tmp <- list(data =  res, meta = meta)
-## write.xlsx(tmp, file = here::here("data", paste0(FILE, "_res.xlsx")),
-##            asTable = F, overwrite = T, rowNames = F, colNames = T)
+#' User can use wrapper function `qc.rlsc.wrap` directly with options of
+#' intra or inter batch signal correction, optimisation of span, log
+#' transformation and batch shifting.
+#+ qcrlsc_save_1, eval=F, include=T
+res <- qc.rlsc.wrap(dat, cls.qc, cls.bl, method, intra, opti, log10, outl,
+                    shift) tmp <- list(data =  res, meta = meta)
+write.xlsx(tmp, file = here::here("data", paste0(FILE, "_res.xlsx")),
+           asTable = F, overwrite = T, rowNames = F, colNames = T)
