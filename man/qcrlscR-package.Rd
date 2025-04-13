@@ -4,7 +4,7 @@
 \name{qcrlscR-package}
 \alias{qcrlscR}
 \alias{qcrlscR-package}
-\title{qcrlscR: Quality Control–based Robust LOESS Signal Correction in R}
+\title{qcrlscR: Quality Control–Based Robust Local Polynomial Regression Fitting(LOESS) Signal Correction in R}
 \description{
 \code{qcrlscR} implements quality control–based robust LOESS
 signal correction for metabolomics data analysis.
@@ -35,6 +35,15 @@ Useful links:
 \itemize{
   \item \url{https://github.com/wanchanglin/qcrlscR}
   \item Report bugs at \url{https://github.com/wanchanglin/qcrlscR/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Wanchang Lin \email{wanchanglin@hotmail.com}
+
+Authors:
+\itemize{
+  \item Warwick Dunn
 }
 
 }
