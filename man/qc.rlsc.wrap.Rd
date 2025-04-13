@@ -67,10 +67,10 @@ log10 <- TRUE
 outl <- TRUE
 shift <- TRUE
 
+\dontrun{
 res <- qc.rlsc.wrap(data, cls.qc, cls.bl, method, intra, opti, log10,
                     outl, shift)
 
-\dontrun{
 ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
 
 ## install.packages("mt")

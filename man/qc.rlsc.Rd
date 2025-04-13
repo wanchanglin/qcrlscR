@@ -46,9 +46,9 @@ cls.qc <- factor(meta$sample_type)
 cls.bl <- factor(meta$batch)
 
 ## apply QC-RLSC with optimisation of 'span'
+\dontrun{
 res_1 <- qc.rlsc(data, cls.qc, method = "subtract", opti = TRUE)
 
-\dontrun{
 ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
 
 ## install.packages("mt")

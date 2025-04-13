@@ -1,14 +1,14 @@
 Type: Package
 Package: qcrlscR
-Title: Quality Control–Based Robust Local Polynomial Regression Fitting(LOESS) Signal Correction in R
+Title: Quality Control–based Robust LOESS Signal Correction in R
 Version: 0.1.3
 Authors@R: c(
     person(given = "Wanchang", family = "Lin", role = c("aut", "cre"),
            email = "wanchanglin@hotmail.com"),
     person(given = "Warwick", family = "Dunn", role = "aut")
   )
-Description: Quality control–based robust local polynomial regression
-    fitting(LOESS) signal correction for metabolomics data analysis.
+Description: Quality control–based robust LOESS(local polynomial regression
+    fitting) signal correction for metabolomics data analysis.
 License: GPL (>= 2)
 Depends: R (>= 3.0.0)
 URL: https://github.com/wanchanglin/qcrlscR

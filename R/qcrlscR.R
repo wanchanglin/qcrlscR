@@ -42,10 +42,10 @@
 #' outl <- TRUE
 #' shift <- TRUE
 #'
+#' \dontrun{
 #' res <- qc.rlsc.wrap(data, cls.qc, cls.bl, method, intra, opti, log10,
 #'                     outl, shift)
 #'
-#' \dontrun{
 #' ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
 #' 
 #' ## install.packages("mt")
@@ -155,9 +155,9 @@ qc.rlsc.wrap <- function(dat, cls.qc, cls.bl,
 #' cls.bl <- factor(meta$batch)
 #' 
 #' ## apply QC-RLSC with optimisation of 'span'
+#' \dontrun{
 #' res_1 <- qc.rlsc(data, cls.qc, method = "subtract", opti = TRUE)
 #'
-#' \dontrun{
 #' ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
 #' 
 #' ## install.packages("mt")
