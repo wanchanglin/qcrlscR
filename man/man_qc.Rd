@@ -26,10 +26,10 @@ This HPLC data set includes 4 batches with missing values.
 \examples{
 man_qc
 t(sapply(man_qc, dim))
-# Select data matrix and meta data
+## Select data matrix and meta data
 data <- man_qc$data
 meta <- man_qc$meta
-# Select batches and data types
+## Select batches and data types
 cls.qc <- factor(meta$sample_type)
 cls.bl <- factor(meta$batch)
 }

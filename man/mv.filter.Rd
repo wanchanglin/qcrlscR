@@ -28,6 +28,7 @@ data <- man_qc$data
 meta <- man_qc$meta
 ## check missing value rates
 tail(sort(mv.perc(data)), 20)
+## missing values filtering
 tmp <- mv.filter(data, thres = 0.15)
 data_f <- tmp$dat
 ## compare

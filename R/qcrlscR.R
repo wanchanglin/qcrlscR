@@ -1,6 +1,7 @@
 ## Functions for QC-RLSC
 ## wl-27-03-2025, Thu: Commence
 ## wl-02-04-2025, Wed: change function names to avoid conflict
+## wl-17-04-2025, Thu: remove 'mt' in example part
 
 ## -----------------------------------------------------------------------
 #' Wrapper function for QC-RLSC
@@ -17,7 +18,7 @@
 #'   are optimised.
 #' @param log10 A logical value indicating whether log10 transformation for
 #'   the data set or not. If the transformation is applied, the reverse
-#'   procedure will be performed.  
+#'   procedure will be performed.
 #' @param outl A logical value indicating whether or not QC outlier
 #'   detection is employed. If TRUE, the QC outlier will be assigned as the 
 #'   median of QC. 
@@ -42,21 +43,9 @@
 #' outl <- TRUE
 #' shift <- TRUE
 #'
-#' \dontrun{
+#' \donttest{
 #' res <- qc.rlsc.wrap(data, cls.qc, cls.bl, method, intra, opti, log10,
 #'                     outl, shift)
-#'
-#' ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
-#' 
-#' ## install.packages("mt")
-#' library("mt")
-#' 
-#' res_fill <- res
-#'
-#' res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
-#' pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
-#' pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
-#' plot(pcalda(res_fill, cls.bl))
 #' }
 #' @export
 ## wl-19-07-2024, Fri: wrapper function for QC-RLSC
@@ -154,32 +143,12 @@ qc.rlsc.wrap <- function(dat, cls.qc, cls.bl,
 #' cls.qc <- factor(meta$sample_type)
 #' cls.bl <- factor(meta$batch)
 #' 
+#' \donttest{
 #' ## apply QC-RLSC with optimisation of 'span'
-#' \dontrun{
 #' res_1 <- qc.rlsc(data, cls.qc, method = "subtract", opti = TRUE)
 #'
-#' ## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
-#' 
-#' ## install.packages("mt")
-#' library("mt")
-#' 
-#' res_fill <- res_1
-#'
-#' res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
-#' pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
-#' pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
-#' plot(pcalda(res_fill, cls.bl))
-#' }
-#' 
 #' ## apply QC-RLSC without optimisation of 'span'
 #' res_2 <- qc.rlsc(data, cls.qc, method = "subtract", opti = FALSE)
-#'
-#' \dontrun{
-#' res_fill <- res_2
-#' res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
-#' pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
-#' pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
-#' plot(pcalda(res_fill, cls.bl))
 #' }
 #' @export
 ## wl-14-08-2023, Mon: QC-RLSC
@@ -436,7 +405,7 @@ mv.perc <- function(x) {
 #' meta <- man_qc$meta
 #' ## check missing value rates
 #' tail(sort(mv.perc(data)), 20)
-## missing values filtering
+#' ## missing values filtering
 #' tmp <- mv.filter(data, thres = 0.15)
 #' data_f <- tmp$dat
 #' ## compare
@@ -548,10 +517,10 @@ mv.filter.qc <- function(x, y, thres = 0.3) {
 #' @examples
 #' man_qc
 #' t(sapply(man_qc, dim))
-#' # Select data matrix and meta data
+#' ## Select data matrix and meta data
 #' data <- man_qc$data
 #' meta <- man_qc$meta
-#' # Select batches and data types
+#' ## Select batches and data types
 #' cls.qc <- factor(meta$sample_type)
 #' cls.bl <- factor(meta$batch)
 ## wl-31-03-2025, Mon: Add Manchester data set for test

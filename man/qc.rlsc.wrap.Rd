@@ -67,21 +67,9 @@ log10 <- TRUE
 outl <- TRUE
 shift <- TRUE
 
-\dontrun{
+\donttest{
 res <- qc.rlsc.wrap(data, cls.qc, cls.bl, method, intra, opti, log10,
                     outl, shift)
-
-## Use PCA and PCA-LDA to check. Use R package 'mt' here. 
-
-## install.packages("mt")
-library("mt")
-
-res_fill <- res
-
-res_fill <- mv.fill(res_fill, method = "median", ze_ne = TRUE)
-pcaplot(res_fill, cls.qc, pcs = c(2, 1), ep = 1)
-pcaplot(res_fill, cls.bl, pcs = c(2, 1), ep = 1)
-plot(pcalda(res_fill, cls.bl))
 }
 }
 \seealso{
