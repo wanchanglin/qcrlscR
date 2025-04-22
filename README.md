@@ -13,8 +13,6 @@ devtools::install_github("wanchanglin/qcrlscR")
 
 ## Installation from CRAN
 
-(Coming soon)
-
 ```r
 install.packages("qcrlscR")
 ```
